@@ -90,7 +90,7 @@ function dl(due){return Math.ceil((new Date(due)-new Date(td()))/86400000);}
 function iv(p){return p.due&&p.status!=="cobrado"&&dl(p.due)<0;}
 function df(date,type){var d=new Date(date);if(type==="c1")d.setDate(d.getDate()+7);else if(type==="c4")d.setDate(d.getDate()+28);else return null;return d.toISOString().split("T")[0];}
 var DE={camion:"Camion",motor:"Motor",recoge:"Recoge"};
-var DEI={camion:"🚛",motor:"🏍",recoge:"🏪"};
+var DEI={camion:"TRK",motor:"MTR",recoge:"TDA"};
 var PN={contado:"Contado",c1:"Credito 1 sem.",c4:"Credito 1 mes"};
 var SN={pendiente:"Pendiente",despachado:"Despachado",credito:"Credito",cobrado:"Cobrado",entregado:"Entregado"};
 var SB={
@@ -102,10 +102,10 @@ var SB={
   vencido:{bg:"#c0392b",c:"#fff"}
 };
 var ROLES={
-  admin:{label:"Supervisor",icon:"👑",pin:"1234"},
-  vendedor:{label:"Vendedor",icon:"🧑",pin:"5678"},
-  camion:{label:"Camion",icon:"🚛",pin:"9012"},
-  socio:{label:"Secretaria",icon:"🤝",pin:"3456"}
+  admin:{label:"Supervisor",icon:"ADM",pin:"1234"},
+  vendedor:{label:"Vendedor",icon:"VND",pin:"5678"},
+  camion:{label:"Camion",icon:"TRK",pin:"9012"},
+  socio:{label:"Secretaria",icon:"SOC",pin:"3456"}
 };
 var S={role:null,sn:"",tab:"",modal:null,pin:"",sr:null,apf:"nuevos",sff:"pendiente",np:{},vp:{}};
 var D={sellers:[],products:[],pedidos:[]};
@@ -147,7 +147,7 @@ function login(){
   var r=S.sr;
   var dots=[0,1,2,3].map(function(i){return '<div class="pdot'+(S.pin.length>i?" on":"")+'"></div>';}).join("");
   var rbtn=Object.keys(ROLES).map(function(k){var v=ROLES[k];return '<div class="rbtn'+(S.sr===k?" on":"")+'" onclick="S.sr=\''+k+'\';S.pin=\'\';render()"><div class="ri">'+v.icon+'</div><div class="rn">'+v.label+'</div></div>';}).join("");
-  var nks=[1,2,3,4,5,6,7,8,9,"",0,"X"].map(function(k){return '<button class="nk'+(k==="X"?" del":"")+'" onclick="pp(\''+k+'\')">'+( k==="X"?"⌫":k)+'</button>';}).join("");
+  var nks=[1,2,3,4,5,6,7,8,9,"",0,"X"].map(function(k){return '<button class="nk'+(k==="X"?" del":"")+'" onclick="pp(\''+k+'\')">'+( k==="X"?"DEL":k)+'</button>';}).join("");
   var ps=r?('<p style="text-align:center;font-size:12px;color:#888;margin-bottom:2px;font-weight:600">Ingresa tu PIN</p><div class="pin-row">'+dots+'</div>'+(S.pin.length===4&&S.pin!==ROLES[r].pin?'<p style="text-align:center;font-size:12px;color:#c0392b;margin-bottom:10px">PIN incorrecto</p>':'')+'<div class="numpad">'+nks+'</div>'):'<p style="text-align:center;font-size:12px;color:#bbb;margin-top:10px">Selecciona tu rol</p>';
   return '<div class="login-wrap"><div class="lcard"><div style="text-align:center;margin-bottom:20px"><div style="background:#c0392b;color:#fff;padding:10px 22px;border-radius:12px;display:inline-block;font-size:22px;font-weight:900">PIKASCARNE</div><div style="font-size:10px;color:#bbb;margin-top:4px">DOMINICANA S.R.L. - Carnes Frescas Siempre!</div></div><p style="text-align:center;font-size:13px;color:#888;margin-bottom:14px;font-weight:600">Quien eres?</p><div class="rgrid">'+rbtn+'</div>'+ps+'</div><p style="color:rgba(255,255,255,.35);font-size:11px;margin-top:16px">Pikascarne Dominicana S.R.L.</p></div>';
 }
@@ -170,10 +170,10 @@ function pp(k){
 }
 
 function tabs(){
-  if(S.role==="admin")return [{id:"pedidos",icon:"📋",l:"Pedidos"},{id:"cuadre",icon:"📊",l:"Cuadre"},{id:"productos",icon:"📦",l:"Productos"},{id:"equipo",icon:"👥",l:"Equipo"}];
-  if(S.role==="vendedor")return [{id:"nuevo",icon:"➕",l:"Nuevo"},{id:"mis",icon:"📋",l:"Mis pedidos"},{id:"perfil",icon:"👤",l:"Perfil"}];
-  if(S.role==="camion")return [{id:"ruta",icon:"🚛",l:"Mi ruta"},{id:"entregados",icon:"✅",l:"Entregados"}];
-  if(S.role==="socio")return [{id:"facturas",icon:"🧾",l:"Facturas"},{id:"pagos",icon:"💳",l:"Pagos"}];
+  if(S.role==="admin")return [{id:"pedidos",icon:"LIS",l:"Pedidos"},{id:"cuadre",icon:"GRF",l:"Cuadre"},{id:"productos",icon:"PKG",l:"Productos"},{id:"equipo",icon:"EQP",l:"Equipo"}];
+  if(S.role==="vendedor")return [{id:"nuevo",icon:"+",l:"Nuevo"},{id:"mis",icon:"LIS",l:"Mis pedidos"},{id:"perfil",icon:"USR",l:"Perfil"}];
+  if(S.role==="camion")return [{id:"ruta",icon:"TRK",l:"Mi ruta"},{id:"entregados",icon:"OK",l:"Entregados"}];
+  if(S.role==="socio")return [{id:"facturas",icon:"FAC",l:"Facturas"},{id:"pagos",icon:"PAG",l:"Pagos"}];
   return [];
 }
 
@@ -206,7 +206,7 @@ function wf(p,cu){
     if(cu)h+='<button class="btn btn-sm btn-gray" style="margin-top:8px" onclick="S.modal={type:\'F\',id:\''+p.id+'\'};render()">Cambiar factura</button>';
     return h+'</div>';
   }
-  if(cu)return '<div class="fbox" onclick="S.modal={type:\'F\',id:\''+p.id+'\'};render()"><div style="font-size:26px">🧾</div><div style="font-size:13px;color:#888;margin-top:6px">Toca para subir factura</div></div>';
+  if(cu)return '<div class="fbox" onclick="S.modal={type:\'F\',id:\''+p.id+'\'};render()"><div style="font-size:26px">FAC</div><div style="font-size:13px;color:#888;margin-top:6px">Toca para subir factura</div></div>';
   return '<div style="margin-top:6px;font-size:12px;color:#bbb">Factura pendiente</div>';
 }
 
@@ -214,8 +214,8 @@ function pc(p){
   var h='<div class="ocard'+(iv(p)?" venc":"")+'"><div class="row" style="margin-bottom:4px"><span style="font-weight:700;font-size:14px">'+DEI[p.dv||"camion"]+" "+p.cl+'</span><span style="font-weight:700;font-size:14px">'+fmt(p.am)+'</span></div>';
   h+='<div style="font-size:12px;color:#888;margin-bottom:2px">'+p.sl+' - '+p.dt+'</div>';
   h+='<div style="font-size:13px;color:#555;margin-bottom:5px">'+p.ds+'</div>';
-  if(p.lo)h+='<div style="font-size:12px;color:#777;margin-bottom:4px">📍 '+p.lo+'</div>';
-  if(p.ph)h+='<div style="font-size:12px;color:#777;margin-bottom:4px">📱 '+p.ph+'</div>';
+  if(p.lo)h+='<div style="font-size:12px;color:#777;margin-bottom:4px">DIR '+p.lo+'</div>';
+  if(p.ph)h+='<div style="font-size:12px;color:#777;margin-bottom:4px">TEL '+p.ph+'</div>';
   var st=iv(p)?"vencido":p.status;var ss=SB[st]||{};
   h+='<div class="row" style="margin-bottom:10px"><span class="pill" style="background:'+ss.bg+';color:'+ss.c+'">'+SN[st]+'</span><span style="font-size:11px;color:#aaa">'+PN[p.pt]+'</span></div>';
   return h;
@@ -264,7 +264,7 @@ function cc(){
 
 function aprods(){
   var np=S.np||{};var c=parseFloat(np.co)||0,ts=parseFloat(np.ts)||0,tc=parseFloat(np.tc)||0;
-  var prev=c&&ts&&tc?'<div style="font-size:12px;color:#555;background:#f5f4f2;padding:8px 12px;border-radius:10px;margin-bottom:12px">RD$'+c+' → +'+(ts-c)+' tuyo → RD$'+ts+' → +'+(tc-ts)+' vend → RD$'+tc+'</div>':"";
+  var prev=c&&ts&&tc?'<div style="font-size:12px;color:#555;background:#f5f4f2;padding:8px 12px;border-radius:10px;margin-bottom:12px">RD$'+c+'  +'+(ts-c)+' tuyo  RD$'+ts+'  +'+(tc-ts)+' vend  RD$'+tc+'</div>':"";
   var pl=D.products.length===0?'<div style="color:#bbb;text-align:center;padding:20px">Sin productos</div>':D.products.map(function(p,i){return '<div style="border-bottom:1px solid #f0f0f0;padding:10px 0"><div class="row"><strong>'+p.nm+'</strong><button class="btn btn-sm btn-gray" style="color:#c0392b;border-color:#fca5a5;width:auto;margin:0;padding:5px 10px" onclick="dpr('+i+')">X</button></div><div style="font-size:12px;margin-top:5px">Costo RD$'+p.co+' | +'+(p.ts-p.co)+' tuyo | +'+(p.tc-p.ts)+' vend | Cliente RD$'+p.tc+'</div></div>';}).join("");
   return '<div class="card"><div style="font-weight:700;font-size:15px;margin-bottom:14px">Agregar producto</div><div class="field"><label class="lbl">Nombre</label><input value="'+(np.nm||"")+'" oninput="(S.np=S.np||{}).nm=this.value" placeholder="Ej: Carne molida comercial"></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:'+(c&&ts&&tc?8:12)+'px"><div><label class="lbl">Costo/lb</label><input type="number" value="'+(np.co||"")+'" oninput="(S.np=S.np||{}).co=this.value;render()" placeholder="100"></div><div><label class="lbl">A vendedor</label><input type="number" value="'+(np.ts||"")+'" oninput="(S.np=S.np||{}).ts=this.value;render()" placeholder="102"></div><div><label class="lbl">Al cliente</label><input type="number" value="'+(np.tc||"")+'" oninput="(S.np=S.np||{}).tc=this.value;render()" placeholder="125"></div></div>'+prev+'<button class="btn btn-red" onclick="addpr()">+ Agregar</button></div><div class="card"><div style="font-weight:700;font-size:15px;margin-bottom:12px">Lista de precios</div>'+pl+'</div>';
 }
@@ -303,9 +303,9 @@ function vmis(){
   var cards=mine.map(function(p){
     var st=iv(p)?"vencido":p.status;var ss=SB[st]||{};
     var h='<div class="ocard'+(iv(p)?" venc":"")+'"><div class="row" style="margin-bottom:4px"><span style="font-weight:700;font-size:14px">'+p.cl+'</span><span style="font-weight:700">'+fmt(p.am)+'</span></div>';
-    if(p.ph)h+='<div style="font-size:12px;color:#777;margin-bottom:2px">📱 '+p.ph+'</div>';
+    if(p.ph)h+='<div style="font-size:12px;color:#777;margin-bottom:2px">TEL '+p.ph+'</div>';
     h+='<div style="font-size:12px;color:#888;margin-bottom:3px">'+p.ds+' - '+p.dt+'</div>';
-    if(p.lo)h+='<div style="font-size:12px;color:#777;margin-bottom:5px">📍 '+p.lo+'</div>';
+    if(p.lo)h+='<div style="font-size:12px;color:#777;margin-bottom:5px">DIR '+p.lo+'</div>';
     h+='<div class="row" style="margin-bottom:8px"><span class="pill" style="background:'+ss.bg+';color:'+ss.c+'">'+SN[st]+'</span><span style="font-size:11px;color:#aaa">'+DEI[p.dv||"camion"]+" "+PN[p.pt]+'</span></div>';
     h+=!p.ok?'<div style="font-size:12px;color:#BA7517;margin-bottom:8px">Pendiente de aprobacion</div>':'<div style="font-size:12px;color:#1D9E75;margin-bottom:8px">Aprobado</div>';
     h+=wf(p,false);
@@ -318,19 +318,19 @@ function vmis(){
 
 function vperfil(){
   var s=D.sellers.find(function(x){return x.nm===S.sn;});
-  return '<div class="card"><div style="font-weight:700;font-size:15px;margin-bottom:14px">Mi perfil</div>'+(s?'<div style="text-align:center;padding:16px 0"><div style="font-size:50px;margin-bottom:10px">🧑</div><div style="font-size:18px;font-weight:700">'+s.nm+'</div><div style="font-size:13px;color:#888;margin-top:6px">Vendedor - Pikascarne</div></div>':'<p style="font-size:14px;color:#666;margin-bottom:16px">Como te llamas?</p><div class="field"><input id="snin" placeholder="Tu nombre completo"></div><button class="btn btn-red" onclick="ssel()">Continuar</button>')+'</div>';
+  return '<div class="card"><div style="font-weight:700;font-size:15px;margin-bottom:14px">Mi perfil</div>'+(s?'<div style="text-align:center;padding:16px 0"><div style="font-size:50px;margin-bottom:10px">VND</div><div style="font-size:18px;font-weight:700">'+s.nm+'</div><div style="font-size:13px;color:#888;margin-top:6px">Vendedor - Pikascarne</div></div>':'<p style="font-size:14px;color:#666;margin-bottom:16px">Como te llamas?</p><div class="field"><input id="snin" placeholder="Tu nombre completo"></div><button class="btn btn-red" onclick="ssel()">Continuar</button>')+'</div>';
 }
 
 function ssel(){var v=document.getElementById("snin")&&document.getElementById("snin").value.trim();if(!v){toast("Escribe tu nombre");return;}S.sn=v;if(!D.sellers.find(function(x){return x.nm===v;})){D.sellers.push({nm:v});save("sellers",D.sellers);}S.tab="nuevo";render();}
 
 function cruta(){
   var ruta=D.pedidos.filter(function(p){return (p.dv==="camion"||p.dv==="motor")&&p.ok&&p.status!=="cobrado"&&p.status!=="entregado";}).slice().reverse();
-  if(!ruta.length)return '<div style="text-align:center;color:#bbb;padding:60px 0"><div style="font-size:50px;margin-bottom:12px">✅</div><div style="font-size:14px">Sin entregas pendientes</div></div>';
+  if(!ruta.length)return '<div style="text-align:center;color:#bbb;padding:60px 0"><div style="font-size:50px;margin-bottom:12px">OK</div><div style="font-size:14px">Sin entregas pendientes</div></div>';
   var cards=ruta.map(function(p){
     var wamsg=encodeURIComponent("Hola "+p.cl+", soy el delivery de Pikascarne. Estoy saliendo hacia tu direccion ahora mismo!");
     var h='<div class="ocard"><div class="row" style="margin-bottom:4px"><span style="font-weight:700;font-size:15px">'+p.cl+'</span><span style="font-weight:700">'+fmt(p.am)+'</span></div>';
-    if(p.ph)h+='<div style="font-size:13px;color:#555;margin-bottom:3px">📱 '+p.ph+'</div>';
-    if(p.lo)h+='<div style="font-size:13px;color:#555;margin-bottom:6px">📍 '+p.lo+'</div>';
+    if(p.ph)h+='<div style="font-size:13px;color:#555;margin-bottom:3px">TEL '+p.ph+'</div>';
+    if(p.lo)h+='<div style="font-size:13px;color:#555;margin-bottom:6px">DIR '+p.lo+'</div>';
     h+='<div style="font-size:13px;color:#888;margin-bottom:10px">'+p.ds+'</div>';
     h+=wf(p,false);
     if(p.ph)h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;margin-bottom:8px"><a href="https://wa.me/'+p.ph.replace(/[^0-9]/g,"")+p.ph.replace(/[^0-9]/g,"").length+"&text="+wamsg+'" target="_blank" class="btn btn-wa btn-sm" style="text-align:center;text-decoration:none">WhatsApp</a><a href="tel:'+p.ph+'" class="btn btn-blue btn-sm" style="text-align:center;text-decoration:none">Llamar</a></div>';
@@ -351,7 +351,7 @@ function sfacts(){
   var sinF=D.pedidos.filter(function(p){return p.ok&&!p.fi&&p.status!=="cobrado";});
   var conF=D.pedidos.filter(function(p){return p.fi;});
   var list=f==="pendiente"?sinF:conF;
-  var cards=list.map(function(p){var st=iv(p)?"vencido":p.status;var ss=SB[st]||{};var h='<div class="ocard"><div class="row" style="margin-bottom:4px"><span style="font-weight:700;font-size:14px">'+DEI[p.dv||"camion"]+" "+p.cl+'</span><span style="font-weight:700">'+fmt(p.am)+'</span></div><div style="font-size:12px;color:#888;margin-bottom:3px">'+p.sl+' - '+p.dt+'</div><div style="font-size:13px;color:#555;margin-bottom:5px">'+p.ds+'</div>';if(p.lo)h+='<div style="font-size:12px;color:#777;margin-bottom:5px">📍 '+p.lo+'</div>';h+='<div class="row" style="margin-bottom:10px"><span class="pill" style="background:'+ss.bg+';color:'+ss.c+'">'+SN[st]+'</span><span style="font-size:11px;color:#aaa">'+PN[p.pt]+'</span></div>'+wf(p,true)+'</div>';return h;}).join("");
+  var cards=list.map(function(p){var st=iv(p)?"vencido":p.status;var ss=SB[st]||{};var h='<div class="ocard"><div class="row" style="margin-bottom:4px"><span style="font-weight:700;font-size:14px">'+DEI[p.dv||"camion"]+" "+p.cl+'</span><span style="font-weight:700">'+fmt(p.am)+'</span></div><div style="font-size:12px;color:#888;margin-bottom:3px">'+p.sl+' - '+p.dt+'</div><div style="font-size:13px;color:#555;margin-bottom:5px">'+p.ds+'</div>';if(p.lo)h+='<div style="font-size:12px;color:#777;margin-bottom:5px">DIR '+p.lo+'</div>';h+='<div class="row" style="margin-bottom:10px"><span class="pill" style="background:'+ss.bg+';color:'+ss.c+'">'+SN[st]+'</span><span style="font-size:11px;color:#aaa">'+PN[p.pt]+'</span></div>'+wf(p,true)+'</div>';return h;}).join("");
   return '<div class="g2"><div class="metric"><div class="ml">Sin factura</div><div class="mv" style="color:#c0392b">'+sinF.length+'</div></div><div class="metric"><div class="ml">Facturados</div><div class="mv" style="color:#1D9E75">'+conF.length+'</div></div></div>'+(sinF.length>0?'<div class="abox">'+sinF.length+' pedido'+(sinF.length>1?"s":"")+" pendiente"+(sinF.length>1?"s":"")+" de factura</div>":"")+'<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-sm '+(f==="pendiente"?"btn-red":"btn-gray")+'" onclick="S.sff=\'pendiente\';render()">Pendientes</button><button class="btn btn-sm '+(f==="facturados"?"btn-red":"btn-gray")+'" onclick="S.sff=\'facturados\';render()">Facturados</button></div>'+(list.length===0?'<div style="text-align:center;color:#bbb;padding:50px 0">'+(f==="pendiente"?"Todo facturado":"Sin facturas")+'</div>':cards);
 }
 
